@@ -1,14 +1,14 @@
 package models;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.util.Calendar;
 
 @Entity
 @Table (name = "task")
 public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    public int id;
 
     @Column(name = "name")
     public String name;
@@ -17,19 +17,19 @@ public class Task {
     public String description;
 
     @Column(name = "time")
-    public Date time;
+    public Calendar time;
 
     @Column(name = "contacts")
     public String contacts;
 
-    public Task(String name, String description, Date time, String contacts) {
+    public Task(String name, String description, Calendar time, String contacts) {
         this.name = name;
         this.description = description;
         this.time = time;
         this.contacts = contacts;
     }
 
-    public Task(String name, String description, Date time) {
+    public Task(String name, String description, Calendar time) {
         this.name = name;
         this.description = description;
         this.time = time;
@@ -62,11 +62,11 @@ public class Task {
         this.description = description;
     }
 
-    public Date getTime() {
+    public Calendar getTime() {
         return time;
     }
 
-    public void setTime(Date time) {
+    public void setTime(Calendar time) {
         this.time = time;
     }
 
@@ -76,5 +76,13 @@ public class Task {
 
     public void setContacts(String contacts) {
         this.contacts = contacts;
+    }
+
+    @Override
+    public String toString() {
+        return "Task [name: " + name
+                + ", description: " + description
+                + ", time: " + time.getTime()
+                + ", contacts: " + contacts + "]";
     }
 }

@@ -6,7 +6,6 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import java.util.List;
-import java.util.Optional;
 
 public class TaskDao {
 
@@ -51,6 +50,16 @@ public class TaskDao {
                 .openSession();
         Transaction transaction = session.beginTransaction();
         session.delete(t);
+        transaction.commit();
+        session.close();
+    }
+
+    public void setName() {
+        Session session = HibernateSessionFactoryUtil
+                .getSessionFactory()
+                .openSession();
+        Transaction transaction = session.beginTransaction();
+//        session.set;
         transaction.commit();
         session.close();
     }
