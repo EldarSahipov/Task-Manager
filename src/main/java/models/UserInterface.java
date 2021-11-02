@@ -2,6 +2,7 @@ package models;
 
 import service.TaskService;
 
+import java.util.Date;
 import java.util.List;
 
 public class UserInterface {
@@ -36,5 +37,21 @@ public class UserInterface {
 
     public void setTask(Task task) {
         taskService.update(task);
+    }
+
+    public List<Task> findByName(String name) {
+        return taskService.finByName(name);
+    }
+
+    public List<Task> tasksCompleted() {
+        return taskService.tasksCompleted();
+    }
+
+    public void deleteTasksCompleted() {
+        taskService.deleteTasksCompleted();
+    }
+
+    public List<Task> tasksUncompleted () {
+        return taskService.tasksUncompleted();
     }
 }

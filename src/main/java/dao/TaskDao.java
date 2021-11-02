@@ -4,6 +4,7 @@ import config.HibernateSessionFactoryUtil;
 import models.Task;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.query.Query;
 
 import java.util.List;
 
@@ -14,6 +15,14 @@ public class TaskDao {
                 .getSessionFactory()
                 .openSession()
                 .get(Task.class, name);
+    }
+
+    public List<Task> finByName(String name) {
+        Session session = HibernateSessionFactoryUtil.getSessionFactory().openSession();
+        Query query = session.createQuery("from Task where name = " + "'" + name + "'");
+        List<Task> taskList = query.list();
+        session.close();
+        return taskList;
     }
 
     public List<Task> getAll() {
@@ -54,13 +63,6 @@ public class TaskDao {
         session.close();
     }
 
-    public void setName() {
-        Session session = HibernateSessionFactoryUtil
-                .getSessionFactory()
-                .openSession();
-        Transaction transaction = session.beginTransaction();
-//        session.set;
-        transaction.commit();
-        session.close();
-    }
+
+
 }

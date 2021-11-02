@@ -2,6 +2,7 @@ package models;
 
 import javax.persistence.*;
 import java.util.Calendar;
+import java.util.Date;
 
 @Entity
 @Table (name = "task")
@@ -17,19 +18,19 @@ public class Task {
     public String description;
 
     @Column(name = "time")
-    public Calendar time;
+    public Date time;
 
     @Column(name = "contacts")
     public String contacts;
 
-    public Task(String name, String description, Calendar time, String contacts) {
+    public Task(String name, String description, Date time, String contacts) {
         this.name = name;
         this.description = description;
         this.time = time;
         this.contacts = contacts;
     }
 
-    public Task(String name, String description, Calendar time) {
+    public Task(String name, String description, Date time) {
         this.name = name;
         this.description = description;
         this.time = time;
@@ -62,11 +63,11 @@ public class Task {
         this.description = description;
     }
 
-    public Calendar getTime() {
+    public Date getTime() {
         return time;
     }
 
-    public void setTime(Calendar time) {
+    public void setTime(Date time) {
         this.time = time;
     }
 
@@ -80,9 +81,9 @@ public class Task {
 
     @Override
     public String toString() {
-        return "Task [name: " + name
-                + ", description: " + description
-                + ", time: " + time.getTime()
-                + ", contacts: " + contacts + "]";
+        return "\n\nTask \nname: " + name
+                + ",\ndescription: " + description
+                + ",\ntime: " + time.getTime()
+                + ",\ncontacts: " + contacts;
     }
 }
