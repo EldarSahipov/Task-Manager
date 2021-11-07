@@ -18,23 +18,21 @@ public class Task {
     public String description;
 
     @Column(name = "time")
-    public Date time;
+    public Calendar time;
 
     @Column(name = "contacts")
     public String contacts;
 
-    public Task(String name, String description, Date time, String contacts) {
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    public Status status;
+
+    public Task(String name, String description, Calendar time, String contacts, Status status) {
         this.name = name;
         this.description = description;
         this.time = time;
         this.contacts = contacts;
-    }
-
-    public Task(String name, String description, Date time) {
-        this.name = name;
-        this.description = description;
-        this.time = time;
-        this.contacts = "";
+        this.status = status;
     }
 
     public Task() {}
@@ -63,11 +61,11 @@ public class Task {
         this.description = description;
     }
 
-    public Date getTime() {
+    public Calendar getTime() {
         return time;
     }
 
-    public void setTime(Date time) {
+    public void setTime(Calendar time) {
         this.time = time;
     }
 
@@ -79,11 +77,28 @@ public class Task {
         this.contacts = contacts;
     }
 
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
     @Override
     public String toString() {
-        return "\n\nTask \nname: " + name
-                + ",\ndescription: " + description
-                + ",\ntime: " + time.getTime()
-                + ",\ncontacts: " + contacts;
+
+        return "\n\nЗадача \nИмя: " + name
+                + ",\nОписание: " + description
+                + ",\nВремя: " +
+                time.get(Calendar.DAY_OF_MONTH) + "." +
+                (time.get(Calendar.MONTH) + 1) + "." +
+                time.get(Calendar.YEAR) + " " +
+                time.get(Calendar.HOUR_OF_DAY) + ":" +
+                time.get(Calendar.MINUTE)
+                + ",\nКонтакты: " + contacts
+                + ",\nСтатус: " + status;
     }
+
+
 }
