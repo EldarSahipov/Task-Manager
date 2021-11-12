@@ -1,23 +1,19 @@
-package Controller;
+package controller;
 
-import dao.TaskDao;
-import models.Notification;
+import repo.TaskDao;
 import models.Task;
 import view.TaskView;
 
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class TaskController {
 
     private final TaskView taskView;
     private final TaskDao taskDao;
-    private final Notification notification;
 
-    public TaskController(TaskView taskView, TaskDao taskDao, Notification notification) {
+    public TaskController(TaskView taskView, TaskDao taskDao) {
         this.taskView = taskView;
         this.taskDao = taskDao;
-        this.notification = notification;
     }
 
     public void getTasksAll() {
@@ -26,20 +22,19 @@ public class TaskController {
     }
 
     public void addTask() {
-        Task task = taskView.getTaskView();
+        Task task = taskView.createTaskView();
         taskDao.save(task);
         System.out.println("Задача добавлена.");
     }
 
-    public void findTaskByName() {
+    public void findTasksByName() {
         String nameTask = taskView.getNameTask();
-        List<Task> taskList = taskDao.getTaskByName(nameTask);
-        if(!taskList.isEmpty()) {
-            taskView.printTask(taskList);
+        List<Task> tasksList = taskDao.getTaskByName(nameTask);
+        if(!tasksList.isEmpty()) {
+            taskView.printTasks(tasksList);
         } else {
             System.out.println("Такой задачи не найдено");
         }
-
     }
 
     public void changeTask() {

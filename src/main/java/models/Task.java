@@ -1,8 +1,11 @@
 package models;
 
 import javax.persistence.*;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
-import java.util.Date;
+import java.util.Locale;
 
 @Entity
 @Table (name = "task")
@@ -18,7 +21,7 @@ public class Task {
     public String description;
 
     @Column(name = "time")
-    public Calendar time;
+    public LocalDateTime time;
 
     @Column(name = "contacts")
     public String contacts;
@@ -27,15 +30,18 @@ public class Task {
     @Enumerated(EnumType.STRING)
     public Status status;
 
-    public Task(String name, String description, Calendar time, String contacts, Status status) {
+
+    public Task(String name, String description, LocalDateTime time, String contacts) {
         this.name = name;
         this.description = description;
         this.time = time;
         this.contacts = contacts;
-        this.status = status;
+        status = Status.ACTIVE;
     }
 
-    public Task() {}
+    public Task() {
+
+    }
 
     public int getId() {
         return id;
@@ -61,11 +67,11 @@ public class Task {
         this.description = description;
     }
 
-    public Calendar getTime() {
+    public LocalDateTime getTime() {
         return time;
     }
 
-    public void setTime(Calendar time) {
+    public void setTime(LocalDateTime time) {
         this.time = time;
     }
 
@@ -87,15 +93,9 @@ public class Task {
 
     @Override
     public String toString() {
-
         return "\n\nЗадача \nИмя: " + name
                 + ",\nОписание: " + description
-                + ",\nВремя: " +
-                time.get(Calendar.DAY_OF_MONTH) + "." +
-                (time.get(Calendar.MONTH) + 1) + "." +
-                time.get(Calendar.YEAR) + " " +
-                time.get(Calendar.HOUR_OF_DAY) + ":" +
-                time.get(Calendar.MINUTE)
+                + ",\nВремя: " + time.format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"))
                 + ",\nКонтакты: " + contacts
                 + ",\nСтатус: " + status;
     }

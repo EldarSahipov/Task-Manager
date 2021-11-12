@@ -5,8 +5,6 @@ import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 
-import java.util.logging.Logger;
-
 public class HibernateSessionFactoryUtil {
     private HibernateSessionFactoryUtil() {}
 

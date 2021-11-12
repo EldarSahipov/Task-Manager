@@ -1,26 +1,43 @@
 package models;
 
+import org.apache.log4j.Logger;
+import repo.TaskDao;
 import java.awt.*;
+import java.util.TimerTask;
 
-public class Notification {
+public class Notification extends TimerTask {
+    private static final Logger log = Logger.getLogger(Notification.class);
+    private final TaskDao taskDao = new TaskDao();
 
     public void displayTray() throws AWTException {
-        //Obtain only one instance of the SystemTray object
-//        SystemTray tray = SystemTray.getSystemTray();
+        Task task = taskDao.searchTaskClosestInTime();
 
-        //If the icon is a file
-//        Image image = Toolkit.getDefaultToolkit().createImage("icon.png");
-        //Alternative (if the icon is on the classpath):
-//        Image image = Toolkit.getDefaultToolkit().createImage(getClass().getResource("icon.png"));
+        SystemTray tray = SystemTray.getSystemTray();
+        Image image = Toolkit.getDefaultToolkit().createImage("icon.jpg");
+        TrayIcon trayIcon = new TrayIcon(image, "Tray");
+        trayIcon.setImageAutoSize(true);
+        trayIcon.setToolTip(task.name);
+        tray.add(trayIcon);
 
-//        TrayIcon trayIcon = new TrayIcon(image, "Tray Demo");
-        //Let the system resize the image if needed
-//        trayIcon.setImageAutoSize(true);
-        //Set tooltip text for the tray icon
-//        trayIcon.setToolTip("System tray icon demo");
-//        tray.add(trayIcon);
-//        Task task = new Task("Ужин", "Заказать пиццы", new Date(2021,11,3,15,0), "");
+        trayIcon.displayMessage(task.name, task.toString(), TrayIcon.MessageType.INFO);
 
-//        trayIcon.displayMessage("Задача", task.toString(), TrayIcon.MessageType.INFO);
+        try {
+            Thread.sleep(60000);
+
+        } catch (InterruptedException e) {
+            log.error(e);
+        }
+
+        MyTimer myTimer = new MyTimer();
+        myTimer.timer();
+    }
+
+    @Override
+    public void run() {
+        try {
+            displayTray();
+        } catch (AWTException e) {
+            log.error(e);
+        }
     }
 }
