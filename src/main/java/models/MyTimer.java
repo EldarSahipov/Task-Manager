@@ -1,7 +1,6 @@
 package models;
 
 import repo.TaskDao;
-
 import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -21,5 +20,6 @@ public class MyTimer {
         time.set(Calendar.SECOND, task.getTime().getSecond());
         time.set(Calendar.MILLISECOND, 0);
         timer.schedule(timerTask, time.getTime());
+
     }
 }

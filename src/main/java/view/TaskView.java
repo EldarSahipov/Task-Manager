@@ -49,14 +49,12 @@ public class TaskView {
     }
 
     public LocalDateTime enterTime() {
-        System.out.println("Введите дату по маске дд.мм.гг чч:мм");
+        System.out.println("Введите дату по маске дд.мм.гггг чч:мм");
         String str = scanner.nextLine();
         String[] subStr = str.split("\\.|:| ");
-        int day = 1;
-        int month = 1;
-        int year = 1;
-        int hh = 1;
-        int mm = 1;
+
+        int day = 0, month = 0, year = 0, hh = 0, mm = 0;
+
         for (int i = 0; i < subStr.length; i++) {
             day = Integer.parseInt(subStr[0]);
             month = Integer.parseInt(subStr[1]);

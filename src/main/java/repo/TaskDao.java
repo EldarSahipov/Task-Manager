@@ -1,6 +1,7 @@
 package repo;
 
 import config.HibernateSessionFactoryUtil;
+import models.Status;
 import models.Task;
 import models.TaskBuilderImpl;
 import org.apache.log4j.Logger;
@@ -46,7 +47,7 @@ public class TaskDao {
         String password = props.getProperty("password");
 
         return DriverManager.getConnection(url, username, password);
-    }
+    } // в отдельный класс!
 
     public List<Task> getTaskByName(String name) {
         List<Task> taskList = new ArrayList<>();
@@ -68,7 +69,8 @@ public class TaskDao {
                         .setDescription(resultSet.getString(3))
                         .setTime(resultSet.getObject(4, LocalDateTime.class))
                         .setContacts(resultSet.getString(5))
-                        .setStatus(resultSet.getString(6)).build();
+                        .setStatus(resultSet.getString(6))
+                        .build();
                 taskList.add(task);
             }
         } catch (SQLException e) {
@@ -160,5 +162,25 @@ public class TaskDao {
             }
         }
         return null;
+    }
+
+    public void completeTask(Task task) {
+        task.status = Status.COMPLETED;
+        update(task);
+    }
+
+    public void postponeTask(Task task, LocalDateTime dateTime) {
+        task.time = dateTime;
+        update(task);
+    }
+
+    public void deleteAndCompleteTask(Task task) {
+        delete(task);
+    }
+
+
+    public void expiredTask(Task task) {
+        task.status = Status.EXPIRED;
+        update(task);
     }
 }
