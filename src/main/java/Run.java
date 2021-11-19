@@ -11,10 +11,10 @@ public class Run {
         TaskDao taskDao = new TaskDao();
         TaskController taskController = new TaskController(taskView, taskDao);
         MyTimer myTimer = new MyTimer();
-        myTimer.timer();
+        myTimer.start();
         Scanner scanner = new Scanner(System.in);
         while (true) {
-            System.out.println("Планировщик задач");
+            System.out.println("\nПланировщик задач");
             System.out.println("1. Добавить задачу");
             System.out.println("2. Поиск задачи");
             System.out.println("3. Вывести все задачи");
@@ -24,6 +24,7 @@ public class Run {
             System.out.println("7. Удалить завершенные задачи");
             System.out.println("8. Показать просроченные задачи");
             System.out.println("9. Показать непросроченные задачи");
+            System.out.println("10. Завершить работу");
 
             int text = scanner.nextInt();
             switch (text) {
@@ -43,17 +44,20 @@ public class Run {
                     taskController.deleteTask();
                     break;
                 case (6):
-
+                    taskController.getCompletedTasks();
                     break;
                 case (7):
+                    taskController.deleteCompletedTask();
                     break;
                 case (8):
-
+                    taskController.getExpiredTasks();
                     break;
-
+                case (9):
+                    taskController.getActiveTasks();
+                    break;
+                case (10):
+                    taskController.exit();
+                }
             }
         }
-
-
     }
-}

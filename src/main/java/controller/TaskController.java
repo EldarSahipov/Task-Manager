@@ -3,8 +3,8 @@ package controller;
 import repo.TaskDao;
 import models.Task;
 import view.TaskView;
-
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class TaskController {
 
@@ -37,39 +37,60 @@ public class TaskController {
         }
     }
 
-    public void changeTask() {
+    private int numberTask() {
         List<Task> taskList = taskDao.getAll();
-
+        int numberTask = -1;
         if(!taskList.isEmpty()) {
+            AtomicInteger i = new AtomicInteger(1);
             System.out.println("Выберите номер задачи");
-            for(int i = 0; i < taskList.size(); i++) {
-                System.out.println((i + 1) + ")" + taskList.get(i));
-            }
+            taskList.forEach((task -> System.out.println(i.getAndIncrement() + " " + task)));
             Scanner scanner = new Scanner(System.in);
-            Task task = taskView.setTaskView(taskList.get(scanner.nextInt() - 1));
-            taskDao.update(task);
+            numberTask = scanner.nextInt();
+            if(numberTask > 0 || numberTask < taskList.size()) {
+                return numberTask - 1;
             } else {
-            System.out.println("Задач нет");
-        }
-    }
-
-    public void deleteTask() {
-        List<Task> taskList = taskDao.getAll();
-
-        if(!taskList.isEmpty()) {
-            System.out.println("Выберите номер задачи");
-            for (int i = 0; i < taskList.size(); i++) {
-                System.out.println((i + 1) + ")" + taskList.get(i));
+                System.out.println("С таким номером нет задачи в списке");
+                return -1;
             }
-            Scanner scanner = new Scanner(System.in);
-            taskDao.delete(taskList.get(scanner.nextInt() - 1));
         } else {
             System.out.println("Задач нет");
         }
+        return numberTask - 1;
+    }
+
+    public void changeTask() {
+        taskDao.update(taskView
+                .setTaskView(taskDao
+                        .getAll().get(numberTask())
+                )
+        );
+    }
+
+    public void deleteTask() {
+        taskDao.delete(taskDao
+                .getAll().get(numberTask())
+        );
+
     }
 
     public void deleteCompletedTask() {
+        taskDao.deleteCompletedTask();
+    }
 
+    public void getExpiredTasks() {
+        taskDao.getExpiredTasks().forEach(System.out::println);
+    }
+
+    public void getActiveTasks() {
+        taskDao.getActiveTasks().forEach(System.out::println);
+    }
+
+    public void getCompletedTasks() {
+        taskDao.getCompletedTasks().forEach(System.out::println);
+    }
+
+    public void exit() {
+        System.exit(1);
     }
 
 

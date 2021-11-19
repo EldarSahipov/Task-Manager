@@ -3,6 +3,7 @@ package view;
 import models.Task;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
 
@@ -51,18 +52,8 @@ public class TaskView {
     public LocalDateTime enterTime() {
         System.out.println("Введите дату по маске дд.мм.гггг чч:мм");
         String str = scanner.nextLine();
-        String[] subStr = str.split("\\.|:| ");
-
-        int day = 0, month = 0, year = 0, hh = 0, mm = 0;
-
-        for (int i = 0; i < subStr.length; i++) {
-            day = Integer.parseInt(subStr[0]);
-            month = Integer.parseInt(subStr[1]);
-            year = Integer.parseInt(subStr[2]);
-            hh = Integer.parseInt(subStr[3]);
-            mm = Integer.parseInt(subStr[4]);
-        }
-        return LocalDateTime.of(year, month, day, hh, mm);
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+        return LocalDateTime.parse(str, dateTimeFormatter);
     }
 
 

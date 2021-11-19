@@ -2,6 +2,8 @@ package models;
 
 import org.apache.log4j.Logger;
 import repo.TaskDao;
+import service.TaskService;
+
 import javax.swing.*;
 import java.awt.*;
 import java.time.LocalDateTime;
@@ -10,7 +12,19 @@ import java.util.TimerTask;
 
 public class Notification extends TimerTask {
     private static final Logger log = Logger.getLogger(Notification.class);
+    private final TaskService taskService = new TaskService();
     private final TaskDao taskDao = new TaskDao();
+
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+
+    @Override
+    public void run() {
+        try {
+            displayTray();
+        } catch (AWTException e) {
+            log.error(e);
+        }
+    }
 
     public void displayTray() throws AWTException {
         Task task = taskDao.searchTaskClosestInTime();
@@ -37,7 +51,7 @@ public class Notification extends TimerTask {
         tray.add(trayIcon);
 
         toComplete.addActionListener(e -> {
-            taskDao.completeTask(task);
+            taskService.completeTask(task);
             tray.remove(trayIcon);
             JOptionPane.showMessageDialog
                     (null,
@@ -49,65 +63,36 @@ public class Notification extends TimerTask {
 
         postpone.addActionListener(e -> postpone.addActionListener(e1 -> {
             String result = JOptionPane.showInputDialog("Введите дату по маске дд.мм.гггг чч:мм");
-            String[] subStr = result.split("\\.|:| ");
-
-            int day = 0, month = 0, year = 0, hh = 0, mm = 0;
-
-            for (int i = 0; i < subStr.length; i++) {
-                day = Integer.parseInt(subStr[0]);
-                month = Integer.parseInt(subStr[1]);
-                year = Integer.parseInt(subStr[2]);
-                hh = Integer.parseInt(subStr[3]);
-                mm = Integer.parseInt(subStr[4]);
-            }
-            LocalDateTime dateTime = LocalDateTime.of(year, month, day, hh, mm);
-            taskDao.postponeTask(task, dateTime);
+            LocalDateTime dateTime = LocalDateTime.parse(result, formatter);
+            taskService.postponeTask(task, dateTime);
             tray.remove(trayIcon);
             JOptionPane.showMessageDialog
                     (null,
                             "Задача отложена на " +
-                                    dateTime.format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")));
+                                    dateTime.format(formatter));
         }));
 
         deleteAndComplete.addActionListener(e -> {
-            taskDao.deleteAndCompleteTask(task);
+            taskService.deleteAndCompleteTask(task);
             JOptionPane.showMessageDialog
                     (null,
                             task + "\nЗадача удалена и завершена",
                             "Удалить и завершить задачу",
                             JOptionPane.INFORMATION_MESSAGE
                     );
+            tray.remove(trayIcon);
         });
 
         overdueTask.addActionListener(e -> {
-            taskDao.expiredTask(task);
+            taskService.expiredTask(task);
             JOptionPane.showMessageDialog(null,
                     "task" + "\nпросрочена",
                     "Не выполнил задачу",
                     JOptionPane.INFORMATION_MESSAGE
                     );
+            tray.remove(trayIcon);
         });
 
         trayIcon.displayMessage(task.name, task.toString(), TrayIcon.MessageType.INFO);
-
-
-        try {
-            Thread.sleep(60000);
-            tray.remove(trayIcon);
-        } catch (InterruptedException e) {
-            log.error(e);
-        }
-
-        MyTimer myTimer = new MyTimer();
-        myTimer.timer();
-    }
-
-    @Override
-    public void run() {
-        try {
-            displayTray();
-        } catch (AWTException e) {
-            log.error(e);
-        }
     }
 }
