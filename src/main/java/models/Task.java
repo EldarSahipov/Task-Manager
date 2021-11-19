@@ -1,15 +1,14 @@
 package models;
 
 import javax.persistence.*;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
-import java.util.Locale;
 
 @Entity
 @Table (name = "task")
 public class Task {
+    private final static String formatPattern = "dd.MM.yyyy HH:mm";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public int id;
@@ -95,7 +94,7 @@ public class Task {
     public String toString() {
         return "\n\nЗадача \nИмя: " + name
                 + ",\nОписание: " + description
-                + ",\nВремя: " + time.format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"))
+                + ",\nВремя: " + time.format(DateTimeFormatter.ofPattern(formatPattern))
                 + ",\nКонтакты: " + contacts
                 + ",\nСтатус: " + status;
     }
