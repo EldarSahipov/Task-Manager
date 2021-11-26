@@ -4,7 +4,6 @@ import repo.TaskDao;
 import models.Task;
 import view.TaskView;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class TaskController {
 
@@ -22,7 +21,7 @@ public class TaskController {
     }
 
     public void addTask() {
-        Task task = taskView.createTaskView();
+        Task task = taskView.createNewTask();
         taskDao.save(task);
         System.out.println("Задача добавлена.");
     }
@@ -37,13 +36,12 @@ public class TaskController {
         }
     }
 
-    private int numberTask() {
+    private int selectTaskNumber() {
         List<Task> taskList = taskDao.getAll();
         int numberTask = -1;
         if(!taskList.isEmpty()) {
-            AtomicInteger i = new AtomicInteger(1);
+            taskList.forEach((task -> System.out.println((taskList.indexOf(task) + 1) + " " + task)));
             System.out.println("Выберите номер задачи");
-            taskList.forEach((task -> System.out.println(i.getAndIncrement() + " " + task)));
             Scanner scanner = new Scanner(System.in);
             numberTask = scanner.nextInt();
             if(numberTask > 0 || numberTask < taskList.size()) {
@@ -61,36 +59,56 @@ public class TaskController {
     public void changeTask() {
         taskDao.update(taskView
                 .setTaskView(taskDao
-                        .getAll().get(numberTask())
+                        .getAll().get(selectTaskNumber())
                 )
         );
     }
 
     public void deleteTask() {
         taskDao.delete(taskDao
-                .getAll().get(numberTask())
-        );
-
+                .getAll().get(selectTaskNumber()));
+        System.out.println("Задача удалена");
     }
 
     public void deleteCompletedTask() {
         taskDao.deleteCompletedTask();
+        System.out.println("Завершенные задачи удалены");
     }
 
     public void getExpiredTasks() {
-        taskDao.getExpiredTasks().forEach(System.out::println);
+        taskDao.getExpiredTasks()
+                .forEach((task -> System.out.println(
+                        (taskDao.getExpiredTasks().indexOf(task) + 1) + " " + task)));
     }
 
     public void getActiveTasks() {
-        taskDao.getActiveTasks().forEach(System.out::println);
+        taskDao.getActiveTasks()
+                .forEach((task -> System.out.println(
+                        (taskDao.getActiveTasks().indexOf(task) + 1) + " " + task)));
     }
 
     public void getCompletedTasks() {
-        taskDao.getCompletedTasks().forEach(System.out::println);
+        taskDao.getCompletedTasks()
+                .forEach((task -> System.out.println(
+                        (taskDao.getCompletedTasks().indexOf(task) + 1) + " " + task)));
     }
 
     public void exit() {
         System.exit(1);
+    }
+
+    public void getMenu() {
+        System.out.println("\nПланировщик задач");
+        System.out.println("1. Добавить задачу");
+        System.out.println("2. Поиск задачи");
+        System.out.println("3. Вывести все задачи");
+        System.out.println("4. Изменить задачу");
+        System.out.println("5. Удалить задачу");
+        System.out.println("6. Показать завершенные задачи");
+        System.out.println("7. Удалить завершенные задачи");
+        System.out.println("8. Показать просроченные задачи");
+        System.out.println("9. Показать непросроченные задачи");
+        System.out.println("10. Завершить работу");
     }
 
 

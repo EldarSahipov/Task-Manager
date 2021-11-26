@@ -3,14 +3,14 @@ package view;
 import models.Task;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
+import static service.InputValidation.getValidationDateTime;
 
 public class TaskView {
     private final Scanner scanner = new Scanner(System.in);
 
-    public Task createTaskView() {
+    public Task createNewTask() {
         System.out.println("Введите название задачи");
         String name = scanner.nextLine();
         System.out.println("Введите описание задачи");
@@ -23,7 +23,7 @@ public class TaskView {
 
     public void printTaskAll(List<Task> taskList) {
         System.out.println("Все задачи:");
-        System.out.print(taskList);
+        taskList.forEach((task -> System.out.println((taskList.indexOf(task) + 1) + " " + task)));
     }
 
     public Task setTaskView(Task task) {
@@ -39,22 +39,17 @@ public class TaskView {
     }
 
     public String getNameTask() {
-        Scanner scanner = new Scanner(System.in);
         System.out.println("Введите имя задачи, которую хотите найти");
         return scanner.nextLine();
     }
 
 
     public void printTasks(List<Task> taskList) {
-        System.out.println(taskList);
+        taskList.forEach((task -> System.out.println((taskList.indexOf(task) + 1) + " " + task)));
     }
 
     public LocalDateTime enterTime() {
         System.out.println("Введите дату по маске дд.мм.гггг чч:мм");
-        String str = scanner.nextLine();
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
-        return LocalDateTime.parse(str, dateTimeFormatter);
+        return getValidationDateTime(scanner.nextLine());
     }
-
-
 }

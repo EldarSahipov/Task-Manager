@@ -1,5 +1,6 @@
 package repo;
 
+import com.sun.istack.Nullable;
 import config.DatabaseConnection;
 import config.HibernateSessionFactoryUtil;
 import models.Status;
@@ -125,23 +126,25 @@ public class TaskDao {
         return listTask;
     }
 
-    public Task searchTaskClosestInTime() {
-        Task task;
+    @Nullable
+    public List<Task> searchTasksClosestInTime() {
+        List<Task> taskList = new ArrayList<>();
         if (connect != null) {
             try(PreparedStatement ps = connect
                     .prepareStatement("SELECT * FROM task WHERE " +
                             "time >= NOW() and " +
-                            "status = '"+ Status.ACTIVE + "' order by time asc limit 1")) {
+                            "status = '"+ Status.ACTIVE + "' order by time asc")) {
                 ResultSet resultSet = ps.executeQuery();
                 if(resultSet.next()) {
-                    task = new TaskBuilderImpl()
+                    Task task = new TaskBuilderImpl()
                             .setId(resultSet.getInt(1))
                             .setName(resultSet.getString(2))
                             .setDescription(resultSet.getString(3))
                             .setTime(resultSet.getObject(4, LocalDateTime.class))
                             .setContacts(resultSet.getString(5))
                             .setStatus(resultSet.getString(6)).build();
-                    return task;
+                    taskList.add(task);
+                    return taskList;
                 }
                 return null;
             } catch (SQLException throwables) {

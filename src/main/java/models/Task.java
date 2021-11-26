@@ -3,6 +3,7 @@ package models;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 
 @Entity
 @Table (name = "task")
@@ -92,12 +93,24 @@ public class Task {
 
     @Override
     public String toString() {
-        return "\n\nЗадача \nИмя: " + name
+        return "\nЗадача \nИмя: " + name
                 + ",\nОписание: " + description
                 + ",\nВремя: " + time.format(DateTimeFormatter.ofPattern(formatPattern))
                 + ",\nКонтакты: " + contacts
-                + ",\nСтатус: " + status;
+                + ",\nСтатус: " + status
+                + "\n";
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Task task = (Task) o;
+        return id == task.id && name.equals(task.name) && description.equals(task.description) && time.equals(task.time) && contacts.equals(task.contacts) && status == task.status;
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, description, time, contacts, status);
+    }
 }

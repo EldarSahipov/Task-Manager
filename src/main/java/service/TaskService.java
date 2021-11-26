@@ -7,22 +7,24 @@ import repo.TaskDao;
 import java.time.LocalDateTime;
 
 public class TaskService{
-    private TaskDao taskDao;
+    private final TaskDao taskDao;
+
+    public TaskService(TaskDao taskDao) {
+        this.taskDao = taskDao;
+    }
 
     public void completeTask(Task task) {
         task.status = Status.COMPLETED;
         taskDao.update(task);
     }
 
-    public void postponeTask(Task task, LocalDateTime dateTime) {
+    public void changeDateTimeTask(Task task, LocalDateTime dateTime) {
+        if(task.time.isBefore(LocalDateTime.now())) {
+            task.status = Status.EXPIRED;
+        }
         task.time = dateTime;
         taskDao.update(task);
     }
-
-    public void deleteAndCompleteTask(Task task) {
-        taskDao.delete(task);
-    }
-
 
     public void expiredTask(Task task) {
         task.status = Status.EXPIRED;
@@ -30,3 +32,4 @@ public class TaskService{
     }
 
 }
+// файл с текстом
