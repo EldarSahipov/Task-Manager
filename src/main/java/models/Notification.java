@@ -43,7 +43,6 @@ public class Notification extends TimerTask {
         return null;
     }
 
-
     public void displayTray() throws AWTException {
         List<Task> taskList = taskDao.searchTasksClosestInTime();
         if(taskList != null) {

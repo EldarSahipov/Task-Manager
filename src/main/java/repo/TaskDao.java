@@ -133,9 +133,9 @@ public class TaskDao {
             try(PreparedStatement ps = connect
                     .prepareStatement("SELECT * FROM task WHERE " +
                             "time >= NOW() and " +
-                            "status = '"+ Status.ACTIVE + "' order by time asc")) {
+                            "status = '"+ Status.ACTIVE + "'")) {
                 ResultSet resultSet = ps.executeQuery();
-                if(resultSet.next()) {
+                while (resultSet.next()) {
                     Task task = new TaskBuilderImpl()
                             .setId(resultSet.getInt(1))
                             .setName(resultSet.getString(2))
@@ -144,9 +144,8 @@ public class TaskDao {
                             .setContacts(resultSet.getString(5))
                             .setStatus(resultSet.getString(6)).build();
                     taskList.add(task);
-                    return taskList;
                 }
-                return null;
+                return taskList;
             } catch (SQLException throwables) {
                 log.error(throwables);
             }
