@@ -4,11 +4,11 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
+import static models.Constant.FORMAT_PATTERN;
 
 @Entity
 @Table (name = "task")
 public class Task {
-    private final static String formatPattern = "dd.MM.yyyy HH:mm";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -95,7 +95,7 @@ public class Task {
     public String toString() {
         return "\nЗадача \nИмя: " + name
                 + ",\nОписание: " + description
-                + ",\nВремя: " + time.format(DateTimeFormatter.ofPattern(formatPattern))
+                + ",\nВремя: " + time.format(DateTimeFormatter.ofPattern(FORMAT_PATTERN))
                 + ",\nКонтакты: " + contacts
                 + ",\nСтатус: " + status
                 + "\n";
@@ -106,7 +106,12 @@ public class Task {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
-        return id == task.id && name.equals(task.name) && description.equals(task.description) && time.equals(task.time) && contacts.equals(task.contacts) && status == task.status;
+        return id == task.id &&
+                name.equals(task.name) &&
+                description.equals(task.description) &&
+                time.equals(task.time) &&
+                contacts.equals(task.contacts) &&
+                status == task.status;
     }
 
     @Override

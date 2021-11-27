@@ -3,6 +3,7 @@ package repo;
 import com.sun.istack.Nullable;
 import config.DatabaseConnection;
 import config.HibernateSessionFactoryUtil;
+import models.Constant;
 import models.Status;
 import models.Task;
 import models.TaskBuilderImpl;
@@ -14,11 +15,10 @@ import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import static models.Constant.*;
 
 public class TaskDao {
     private static Connection connect;
-    private static final Logger log = Logger.getLogger(TaskDao.class);
-    private static final String DRIVER = "com.mysql.cj.jdbc.Driver";
 
     static {
         try {
@@ -26,10 +26,10 @@ public class TaskDao {
             try {
                 connect = DatabaseConnection.getConnection();
             } catch (SQLException | IOException throwables) {
-                log.error(throwables);
+                LOGGER.error(throwables);
             }
         } catch (ClassNotFoundException e) {
-            log.error(e);
+            LOGGER.error(e);
         }
     }
 
@@ -51,7 +51,7 @@ public class TaskDao {
                 taskList.add(task);
             }
         } catch (SQLException e) {
-            log.error(e);
+            LOGGER.error(e);
         }
         return taskList;
     }
@@ -147,7 +147,7 @@ public class TaskDao {
                 }
                 return taskList;
             } catch (SQLException throwables) {
-                log.error(throwables);
+                LOGGER.error(throwables);
             }
         }
         return null;

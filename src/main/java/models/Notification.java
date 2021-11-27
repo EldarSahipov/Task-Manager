@@ -6,24 +6,22 @@ import service.TaskService;
 import javax.swing.*;
 import java.awt.*;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.List;
+import static models.Constant.FORMATTER;
+import static models.Constant.LOGGER;
 
 public class Notification extends TimerTask {
-    private static final Logger log = Logger.getLogger(Notification.class);
     private final TaskDao taskDao = new TaskDao();
     private final TaskService taskService = new TaskService(taskDao);
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"); //  в константы
     private final List<Integer> listNotification = new ArrayList<>();
-
 
     @Override
     public void run() {
         try {
             displayTray();
         } catch (AWTException e) {
-            log.error(e);
+            LOGGER.error(e);
         }
     }
 
@@ -48,8 +46,8 @@ public class Notification extends TimerTask {
         if(taskList != null) {
             for(int i = 0; i < taskList.size(); i++) {
                 if(!listNotification.contains(taskList.get(i).id) &&
-                        taskList.get(i).time.format(formatter)
-                                .equals(LocalDateTime.now().format(formatter))) {
+                        taskList.get(i).time.format(FORMATTER)
+                                .equals(LocalDateTime.now().format(FORMATTER))) {
 
                     listNotification.add(taskList.get(i).id);
                     SystemTray tray = SystemTray.getSystemTray();
@@ -104,7 +102,7 @@ public class Notification extends TimerTask {
                         JOptionPane.showMessageDialog
                                 (null,
                                         "Задача отложена на " +
-                                                dateTime.format(formatter));
+                                                dateTime.format(FORMATTER));
                     }));
 
                     changeDateTimeTask.addActionListener(e -> changeDateTimeTask.addActionListener(e1 -> {
@@ -113,9 +111,9 @@ public class Notification extends TimerTask {
                         boolean a = true;
                         while (a) {
                             try {
-                                dateTime = LocalDateTime.parse(result, formatter);
+                                dateTime = LocalDateTime.parse(result, FORMATTER);
                             } catch (Exception ignored) {}
-                            if(dateTime != null && result.equals(formatter.format(dateTime))) {
+                            if(dateTime != null && result.equals(FORMATTER.format(dateTime))) {
                                 a = false;
                             } else {
                                 result = JOptionPane.showInputDialog("Введите дату по маске дд.мм.гггг чч:мм");
@@ -126,7 +124,7 @@ public class Notification extends TimerTask {
                         JOptionPane.showMessageDialog
                                 (null,
                                         "Задача отложена на " +
-                                                dateTime.format(formatter));
+                                                dateTime.format(FORMATTER));
                     }));
 
                     deleteTask.addActionListener(e -> {
