@@ -3,19 +3,23 @@ package repo;
 import com.sun.istack.Nullable;
 import config.DatabaseConnection;
 import config.HibernateSessionFactoryUtil;
-import models.Constant;
 import models.Status;
 import models.Task;
 import models.TaskBuilderImpl;
-import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+
 import java.io.IOException;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import static models.Constant.*;
+
+import static models.Constant.DRIVER;
+import static models.Constant.LOGGER;
 
 public class TaskDao {
     private static Connection connect;
