@@ -13,7 +13,7 @@ import static models.Constant.*;
 
 public class Notification extends TimerTask {
     private final TaskDao taskDao = new TaskDao();
-    private final TaskService taskService = new TaskService(taskDao);
+    private final TaskService taskService = new TaskService();
     private final List<Integer> listNotification = new ArrayList<>();
     private final JSONObject jsonObject = JsonParser.getJsonObject();
 
@@ -77,7 +77,7 @@ public class Notification extends TimerTask {
                         tray.remove(trayIcon);
                         JOptionPane.showMessageDialog
                                 (null,
-                                        taskList + " \n" + jsonObject.get("completed"),
+                                        taskList.get(finalI) + " \n" + jsonObject.get("completed"),
                                         (String) jsonObject.get("completed"),
                                         JOptionPane.INFORMATION_MESSAGE
                                 );

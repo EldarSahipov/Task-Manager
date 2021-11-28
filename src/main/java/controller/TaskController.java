@@ -4,6 +4,7 @@ import models.JsonParser;
 import org.json.simple.JSONObject;
 import repo.TaskDao;
 import models.Task;
+import service.TaskService;
 import view.InputTaskView;
 import view.OutputTaskView;
 import java.util.*;
@@ -13,6 +14,7 @@ public class TaskController {
     private final OutputTaskView outputTaskView;
     private final TaskDao taskDao;
     private final JSONObject jsonObject = JsonParser.getJsonObject();
+    private final TaskService taskService = new TaskService();
 
     public TaskController(InputTaskView inputTaskView, OutputTaskView outputTaskView, TaskDao taskDao) {
         this.taskDao = taskDao;
@@ -28,6 +30,7 @@ public class TaskController {
     public void addTask() {
         Task task = inputTaskView.createNewTask();
         taskDao.save(task);
+        taskService.changeDateTimeTask(task, task.time);
         assert jsonObject != null;
         System.out.println(jsonObject.get("taskAdded"));
     }
@@ -65,11 +68,9 @@ public class TaskController {
     }
 
     public void changeTask() {
-        taskDao.update(inputTaskView
-                .setTaskView(taskDao
-                        .getAll().get(selectTaskNumber())
-                )
-        );
+        Task task = taskDao.getAll().get(selectTaskNumber());
+        taskDao.update(inputTaskView.setTaskView(task));
+        taskService.changeDateTimeTask(task, task.time);
     }
 
     public void deleteTask() {

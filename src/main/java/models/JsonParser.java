@@ -9,7 +9,6 @@ import java.io.IOException;
 import static models.Constant.*;
 
 public class JsonParser {
-
     private static final JSONParser parser = new JSONParser();
 
     public static JSONObject getJsonObject() {
