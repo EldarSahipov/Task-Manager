@@ -5,7 +5,7 @@ import models.Task;
 import repo.TaskDao;
 
 import java.time.LocalDateTime;
-
+import static models.Constant.*;
 public class TaskService{
     private final TaskDao taskDao;
 
@@ -19,7 +19,7 @@ public class TaskService{
     }
 
     public void changeDateTimeTask(Task task, LocalDateTime dateTime) {
-        if(task.time.isBefore(LocalDateTime.now())) {
+        if(!task.time.isBefore(LocalDateTime.now())) {
             task.status = Status.EXPIRED;
         }
         task.time = dateTime;

@@ -1,6 +1,6 @@
 package models;
 
-import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
 import repo.TaskDao;
 import service.TaskService;
 import javax.swing.*;
@@ -8,13 +8,14 @@ import java.awt.*;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.List;
-import static models.Constant.FORMATTER;
-import static models.Constant.LOGGER;
+
+import static models.Constant.*;
 
 public class Notification extends TimerTask {
     private final TaskDao taskDao = new TaskDao();
     private final TaskService taskService = new TaskService(taskDao);
     private final List<Integer> listNotification = new ArrayList<>();
+    private final JSONObject jsonObject = JsonParser.getJsonObject();
 
     @Override
     public void run() {
@@ -26,17 +27,13 @@ public class Notification extends TimerTask {
     }
 
     public LocalDateTime getDelayedDateTimeTask(String datetime, Task task) {
-        switch (datetime) {
-            case "5 минут":
-                return task.time = task.time.plusMinutes(5);
-            case "30 минут":
-                return task.time = task.time.plusMinutes(30);
-            case "1 час":
-                return task.time = task.time.plusHours(1);
-            case "6 часов":
-                return task.time = task.time.plusHours(6);
-            case "24 часа":
-                return task.time = task.time.plusDays(1);
+        DelayedTime delayedTime = DelayedTime.getType(datetime);
+        switch (delayedTime) {
+            case FIVE_MINUTES: return task.time = task.time.plusMinutes(5);
+            case THIRTY_MINUTES: return task.time = task.time.plusMinutes(30);
+            case ONE_HOUR: return task.time = task.time.plusHours(1);
+            case SIX_HOURS: return task.time = task.time.plusHours(6);
+            case TWENTY_FOUR_HOURS: return task.time = task.time.plusDays(1);
         }
         return null;
     }
@@ -51,15 +48,16 @@ public class Notification extends TimerTask {
 
                     listNotification.add(taskList.get(i).id);
                     SystemTray tray = SystemTray.getSystemTray();
-                    Image image = Toolkit.getDefaultToolkit().createImage("src/main/resources/icon.jpg");
+                    Image image = Toolkit.getDefaultToolkit().createImage(FILE_NAME_IMAGE);
 
                     final PopupMenu menu = new PopupMenu();
 
-                    final MenuItem toCompleteTask = new MenuItem("Выполнил");
-                    final MenuItem postponeTask = new MenuItem("Отложить");
-                    final MenuItem changeDateTimeTask = new MenuItem("Изменить время задачи");
-                    final MenuItem deleteTask = new MenuItem("Удалить задачу");
-                    final MenuItem overdueTask = new MenuItem("Не выполнил задачу");
+                    assert jsonObject != null;
+                    final MenuItem toCompleteTask = new MenuItem((String) jsonObject.get("completed"));
+                    final MenuItem postponeTask = new MenuItem((String) jsonObject.get("postpone"));
+                    final MenuItem changeDateTimeTask = new MenuItem((String) jsonObject.get("changeDateTimeTask"));
+                    final MenuItem deleteTask = new MenuItem((String) jsonObject.get("deleteTask"));
+                    final MenuItem overdueTask = new MenuItem((String) jsonObject.get("didntCompleteTheTask"));
                     menu.add(toCompleteTask);
                     menu.add(postponeTask);
                     menu.add(changeDateTimeTask);
@@ -79,34 +77,39 @@ public class Notification extends TimerTask {
                         tray.remove(trayIcon);
                         JOptionPane.showMessageDialog
                                 (null,
-                                        taskList + " \nвыполнена",
-                                        "Выполнил",
+                                        taskList + " \n" + jsonObject.get("completed"),
+                                        (String) jsonObject.get("completed"),
                                         JOptionPane.INFORMATION_MESSAGE
                                 );
                     });
 
-                    postponeTask.addActionListener(e -> changeDateTimeTask.addActionListener(e1 -> {
+                    postponeTask.addActionListener(e -> {
                         String[] timeInterval = {
-                                "5 минут",
-                                "30 минут",
-                                "1 час",
-                                "6 часов",
-                                "24 часа"
+                                (String) jsonObject.get("min5"),
+                                (String) jsonObject.get("min30"),
+                                (String) jsonObject.get("hour1"),
+                                (String) jsonObject.get("hour6"),
+                                (String) jsonObject.get("hour24")
                         };
-                        String result = (String) JOptionPane.showInputDialog(null,"Отложить на:", "Отложить",
+
+                        String result = (String) JOptionPane.showInputDialog
+                                (null,
+                                        jsonObject.get("setAsideFor"),
+                                        (String) jsonObject.get("postpone"),
                                 JOptionPane.QUESTION_MESSAGE,
                                 null, timeInterval, timeInterval[0]);
+
                         LocalDateTime dateTime = getDelayedDateTimeTask(result, taskList.get(finalI));
                         taskService.changeDateTimeTask(taskList.get(finalI), dateTime);
                         tray.remove(trayIcon);
                         JOptionPane.showMessageDialog
                                 (null,
-                                        "Задача отложена на " +
+                                        jsonObject.get("theTaskHasBeenPostponedFor") +
                                                 dateTime.format(FORMATTER));
-                    }));
+                    });
 
-                    changeDateTimeTask.addActionListener(e -> changeDateTimeTask.addActionListener(e1 -> {
-                        String result = JOptionPane.showInputDialog("Введите дату по маске дд.мм.гггг чч:мм");
+                    changeDateTimeTask.addActionListener(e -> {
+                        String result = JOptionPane.showInputDialog(jsonObject.get("enterDateTimeTask"));
                         LocalDateTime dateTime = null;
                         boolean a = true;
                         while (a) {
@@ -116,23 +119,23 @@ public class Notification extends TimerTask {
                             if(dateTime != null && result.equals(FORMATTER.format(dateTime))) {
                                 a = false;
                             } else {
-                                result = JOptionPane.showInputDialog("Введите дату по маске дд.мм.гггг чч:мм");
+                                result = JOptionPane.showInputDialog(jsonObject.get("enterDateTimeTask"));
                             }
                         }
                         taskService.changeDateTimeTask(taskList.get(finalI), dateTime);
                         tray.remove(trayIcon);
                         JOptionPane.showMessageDialog
                                 (null,
-                                        "Задача отложена на " +
+                                        jsonObject.get("theTaskHasBeenPostponedFor") +
                                                 dateTime.format(FORMATTER));
-                    }));
+                    });
 
                     deleteTask.addActionListener(e -> {
                         taskDao.delete(taskList.get(finalI));
                         JOptionPane.showMessageDialog
                                 (null,
-                                        taskList.get(finalI) + "\nЗадача удалена",
-                                        "Удалить",
+                                        taskList.get(finalI) + "\n" + jsonObject.get("taskDeleted"),
+                                        (String) jsonObject.get("delete"),
                                         JOptionPane.INFORMATION_MESSAGE
                                 );
                         tray.remove(trayIcon);
@@ -141,14 +144,17 @@ public class Notification extends TimerTask {
                     overdueTask.addActionListener(e -> {
                         taskService.expiredTask(taskList.get(finalI));
                         JOptionPane.showMessageDialog(null,
-                                taskList.get(finalI) + "\nпросрочена",
-                                "Не выполнил задачу",
+                                taskList.get(finalI) + "\n" + jsonObject.get("expired"),
+                                (String) jsonObject.get("didntCompleteTheTask"),
                                 JOptionPane.INFORMATION_MESSAGE
                         );
                         tray.remove(trayIcon);
                     });
 
-                    trayIcon.displayMessage(taskList.get(i).name, taskList.get(i).toString(), TrayIcon.MessageType.INFO);
+                    trayIcon.displayMessage(
+                            taskList.get(i).name,
+                            taskList.get(i).toString(),
+                            TrayIcon.MessageType.INFO);
                 }
             }
         }

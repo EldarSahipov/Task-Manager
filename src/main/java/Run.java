@@ -1,15 +1,17 @@
 import controller.TaskController;
 import models.TaskTimer;
 import repo.TaskDao;
-import view.TaskView;
+import view.InputTaskView;
+import view.OutputTaskView;
 import java.util.Scanner;
 
 public class Run {
 
     public static void main(String[] args) {
-        TaskView taskView = new TaskView();
+        InputTaskView inputTaskView = new InputTaskView();
+        OutputTaskView outputTaskView = new OutputTaskView();
         TaskDao taskDao = new TaskDao();
-        TaskController taskController = new TaskController(taskView, taskDao);
+        TaskController taskController = new TaskController(inputTaskView, outputTaskView, taskDao);
         TaskTimer taskTimer = new TaskTimer();
         taskTimer.start();
         Scanner scanner = new Scanner(System.in);

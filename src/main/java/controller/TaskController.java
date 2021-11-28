@@ -1,63 +1,71 @@
 package controller;
 
+import models.JsonParser;
+import org.json.simple.JSONObject;
 import repo.TaskDao;
 import models.Task;
-import view.TaskView;
+import view.InputTaskView;
+import view.OutputTaskView;
 import java.util.*;
 
 public class TaskController {
-
-    private final TaskView taskView;
+    private final InputTaskView inputTaskView;
+    private final OutputTaskView outputTaskView;
     private final TaskDao taskDao;
+    private final JSONObject jsonObject = JsonParser.getJsonObject();
 
-    public TaskController(TaskView taskView, TaskDao taskDao) {
-        this.taskView = taskView;
+    public TaskController(InputTaskView inputTaskView, OutputTaskView outputTaskView, TaskDao taskDao) {
         this.taskDao = taskDao;
+        this.inputTaskView = inputTaskView;
+        this.outputTaskView = outputTaskView;
     }
 
     public void getTasksAll() {
         List<Task> taskList = taskDao.getAll();
-        taskView.printTaskAll(taskList);
+        outputTaskView.printTaskAll(taskList);
     }
 
     public void addTask() {
-        Task task = taskView.createNewTask();
+        Task task = inputTaskView.createNewTask();
         taskDao.save(task);
-        System.out.println("Задача добавлена.");
+        assert jsonObject != null;
+        System.out.println(jsonObject.get("taskAdded"));
     }
 
     public void findTasksByName() {
-        String nameTask = taskView.getNameTask();
+        String nameTask = outputTaskView.getNameTask();
         List<Task> tasksList = taskDao.getTaskByName(nameTask);
         if(!tasksList.isEmpty()) {
-            taskView.printTasks(tasksList);
+            outputTaskView.printTasks(tasksList);
         } else {
-            System.out.println("Такой задачи не найдено");
+            assert jsonObject != null;
+            System.out.println(jsonObject.get("noTasksFound"));
         }
     }
 
     private int selectTaskNumber() {
         List<Task> taskList = taskDao.getAll();
         int numberTask = -1;
+        assert jsonObject != null;
         if(!taskList.isEmpty()) {
             taskList.forEach((task -> System.out.println((taskList.indexOf(task) + 1) + " " + task)));
-            System.out.println("Выберите номер задачи");
+            System.out.println(jsonObject.get("selectTaskNumber"));
             Scanner scanner = new Scanner(System.in);
             numberTask = scanner.nextInt();
             if(numberTask > 0 || numberTask < taskList.size()) {
                 return numberTask - 1;
             } else {
-                System.out.println("С таким номером нет задачи в списке");
+                System.out.println(jsonObject.get("noTaskInTheList"));
                 return -1;
             }
         } else {
-            System.out.println("Задач нет");
+            System.out.println(jsonObject.get("noTasks"));
         }
         return numberTask - 1;
     }
 
     public void changeTask() {
-        taskDao.update(taskView
+        taskDao.update(inputTaskView
                 .setTaskView(taskDao
                         .getAll().get(selectTaskNumber())
                 )
@@ -67,12 +75,14 @@ public class TaskController {
     public void deleteTask() {
         taskDao.delete(taskDao
                 .getAll().get(selectTaskNumber()));
-        System.out.println("Задача удалена");
+        assert jsonObject != null;
+        System.out.println(jsonObject.get("taskDeleted"));
     }
 
     public void deleteCompletedTask() {
         taskDao.deleteCompletedTask();
-        System.out.println("Завершенные задачи удалены");
+        assert jsonObject != null;
+        System.out.println(jsonObject.get("completedTasksDeleted"));
     }
 
     public void getExpiredTasks() {
@@ -98,17 +108,7 @@ public class TaskController {
     }
 
     public void getMenu() {
-        System.out.println("\nПланировщик задач");
-        System.out.println("1. Добавить задачу");
-        System.out.println("2. Поиск задачи");
-        System.out.println("3. Вывести все задачи");
-        System.out.println("4. Изменить задачу");
-        System.out.println("5. Удалить задачу");
-        System.out.println("6. Показать завершенные задачи");
-        System.out.println("7. Удалить завершенные задачи");
-        System.out.println("8. Показать просроченные задачи");
-        System.out.println("9. Показать непросроченные задачи");
-        System.out.println("10. Завершить работу");
+        outputTaskView.printMenu();
     }
 
 

@@ -1,5 +1,7 @@
 package models;
 
+import org.json.simple.JSONObject;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -29,7 +31,6 @@ public class Task {
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     public Status status;
-
 
     public Task(String name, String description, LocalDateTime time, String contacts) {
         this.name = name;
@@ -93,11 +94,13 @@ public class Task {
 
     @Override
     public String toString() {
-        return "\nЗадача \nИмя: " + name
-                + ",\nОписание: " + description
-                + ",\nВремя: " + time.format(DateTimeFormatter.ofPattern(FORMAT_PATTERN))
-                + ",\nКонтакты: " + contacts
-                + ",\nСтатус: " + status
+        JSONObject jsonObject = JsonParser.getJsonObject();
+        assert jsonObject != null;
+        return "\n" + jsonObject.get("task") + "\n" + jsonObject.get("name")+ " " + name
+                + ",\n" + jsonObject.get("description")+ " " + description
+                + ",\n" + jsonObject.get("dateTime")+ " " + time.format(DateTimeFormatter.ofPattern(FORMAT_PATTERN))
+                + ",\n" + jsonObject.get("contacts")+ " " + contacts
+                + ",\n" + jsonObject.get("status")+ " " + status
                 + "\n";
     }
 
